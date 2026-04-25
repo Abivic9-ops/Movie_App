@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoviesHub - Premium Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="layout-container">
+        
+        <!-- Sidebar Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar glass-panel shadow-heavy" id="main-sidebar">
+            <!-- Logo -->
+            <div class="logo-area">
+                <div class="logo-icon gradient-primary shadow-glow-primary">
+                    <i class='bx bx-play text-white'></i>
+                </div>
+                <h1 class="logo-text">Stream<span class="text-primary">Hub</span></h1>
+            </div>
+
+            <!-- Navigation -->
+            <div class="sidebar-scroll custom-scrollbar">
+                <div class="nav-section">
+                    <p class="nav-heading">Menu</p>
+                    <ul class="nav-list" id="main-nav">
+                        <li class="nav-item active" data-section="home">
+                            <i class='bx bx-home-alt'></i> <span>Home</span>
+                        </li>
+                        <li class="nav-item" data-section="trending">
+                            <i class='bx bx-trending-up'></i> <span>Trending</span>
+                        </li>
+                        <li class="nav-item" data-section="top-rated">
+                            <i class='bx bx-star'></i> <span>Top Rated</span>
+                        </li>
+                        <li class="nav-item" data-section="tv-shows">
+                            <i class='bx bx-tv'></i> <span>TV Shows</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-heading">Library</p>
+                    <ul class="nav-list" id="library-nav">
+                        <li class="nav-item" data-section="favorites">
+                            <i class='bx bx-heart'></i> <span>Favorites</span>
+                        </li>
+                        <li class="nav-item" data-section="watch-later">
+                            <i class='bx bx-time-five'></i> <span>Watch Later</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- User Profile (Default Logged In) -->
+            <div class="user-profile-wrapper border-top relative-wrapper">
+                <div class="user-profile" id="profile-btn">
+                    <img id="sidebar-avatar" src="https://i.pravatar.cc/150?img=68" alt="Profile" class="avatar border-primary">
+                    <div class="user-info">
+                        <p class="user-name" id="sidebar-username">Don Victor</p>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <i class='bx bxs-crown text-accent' style="font-size:0.8rem;"></i>
+                            <p class="user-status text-accent" id="sidebar-plan">Premium Plan</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Profile Dropdown (Rich Immediate Card) -->
+                <div class="dropdown-menu dropdown-up glass-panel shadow-heavy hidden" id="profile-dropdown">
+                    <div class="dropdown-header">
+                        <p class="text-xs text-dim uppercase bold" style="margin-bottom:8px; letter-spacing:1px;">Account</p>
+                    </div>
+                    <div class="dropdown-item" id="btn-open-settings"><i class='bx bx-user-circle'></i> Profile Settings</div>
+                    <div class="dropdown-item" id="btn-open-subscription"><i class='bx bx-credit-card-front'></i> My Subscription</div>
+                    <div class="dropdown-item" id="btn-open-devices"><i class='bx bx-devices'></i> Linked Devices</div>
+                    
+                    <div class="border-top my-1"></div>
+                    <div class="dropdown-header">
+                        <p class="text-xs text-dim uppercase bold" style="margin-bottom:8px; letter-spacing:1px;">Rewards</p>
+                    </div>
+                    <div class="dropdown-item" style="justify-content: space-between;">
+                        <div style="display:flex; align-items:center; gap:12px;"><i class='bx bx-wallet'></i> My Wallet</div>
+                        <span class="badge-mini">$12.50</span>
+                    </div>
+                    <div class="dropdown-item"><i class='bx bx-gift'></i> Redeem Code</div>
+                    
+                    <div class="border-top my-1"></div>
+                    <div class="dropdown-item text-primary" id="btn-logout"><i class='bx bx-log-out-circle'></i> Sign Out</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content custom-scrollbar" id="main-scroll">
+            
+            <!-- Top Header -->
+            <header class="top-header glass-header">
+                
+                <div class="header-left">
+                    <button id="menu-toggle-btn" class="menu-btn glass-panel-light shadow-heavy">
+                        <i class='bx bx-menu'></i>
+                    </button>
+                    <!-- Search -->
+                    <div class="search-container">
+                        <div class="search-box glass-panel-light">
+                            <i class='bx bx-search search-icon'></i>
+                            <input type="text" id="search-input" class="search-input" placeholder="Search movies, tv shows... (Press Enter to view all)">
+                            
+                            <!-- Search Results Dropdown -->
+                            <div id="search-results" class="search-results glass-panel hidden custom-scrollbar shadow-heavy">
+                                <!-- Injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <div class="category-tabs glass-panel-light">
+                        <button class="tab-btn active" data-filter="all">All</button>
+                        <button class="tab-btn" data-filter="movie">Movies</button>
+                        <button class="tab-btn" data-filter="tv">Series</button>
+                    </div>
+                    
+                    <div class="relative-wrapper">
+                        <button class="notification-btn glass-panel-light" id="notification-btn">
+                            <i class='bx bx-bell'></i>
+                            <span class="notification-dot bg-primary shadow-glow-primary"></span>
+                        </button>
+                        <!-- Large Notification Dropdown -->
+                        <div class="dropdown-menu notification-panel glass-panel shadow-heavy hidden" id="notification-dropdown">
+                            <div class="notification-header">
+                                <h4 class="dropdown-header border-none mb-0">Notifications Center</h4>
+                                <span class="text-xs text-primary cursor-pointer font-bold">Mark all read</span>
+                            </div>
+                            
+                            <div class="notification-list custom-scrollbar">
+                                <div class="dropdown-item notif-item unread">
+                                    <div class="notif-icon bg-primary"><i class='bx bx-shield-check'></i></div>
+                                    <div class="notif-content">
+                                        <p class="notif-title">Account Status: Premium Active</p>
+                                        <p class="notif-desc">Your subscription is active. Enjoy unlimited ad-free streaming.</p>
+                                        <span class="notif-time">Just now</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item notif-item unread">
+                                    <div class="notif-icon bg-accent"><i class='bx bx-trending-up'></i></div>
+                                    <div class="notif-content">
+                                        <p class="notif-title">Trending: Arcane Season 2</p>
+                                        <p class="notif-desc">The most watched series this week is now available in 4K HDR.</p>
+                                        <span class="notif-time">2 hours ago</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item notif-item">
+                                    <div class="notif-icon" style="background: rgba(255,255,255,0.1);"><i class='bx bx-accessibility'></i></div>
+                                    <div class="notif-content">
+                                        <p class="notif-title">Accessibility Options Expanded</p>
+                                        <p class="notif-desc">We've added high-contrast subtitles and audio descriptions.</p>
+                                        <span class="notif-time">1 day ago</span>
+                                    </div>
+                                </div>
+                                <div class="dropdown-item notif-item">
+                                    <div class="notif-icon" style="background: rgba(255,255,255,0.1);"><i class='bx bx-devices'></i></div>
+                                    <div class="notif-content">
+                                        <p class="notif-title">New Device Signed In</p>
+                                        <p class="notif-desc">MoviesHub was accessed from a Smart TV.</p>
+                                        <span class="notif-time">3 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                
+                <!-- HOME VIEW -->
+                <div id="home-view">
+                    <!-- Hero Section -->
+                    <section id="hero-section" class="hero-section glass-panel shadow-heavy">
+                        <div id="hero-bg" class="hero-bg"></div>
+                        <div class="hero-gradient-overlay"></div>
+                        
+                        <div class="hero-content-wrapper">
+                            <div class="hero-content" id="hero-content">
+                                <!-- Skeleton Loader -->
+                                <div class="skeleton-loader">
+                                    <div class="skel-badge"></div>
+                                    <div class="skel-title"></div>
+                                    <div class="skel-desc-1"></div>
+                                    <div class="skel-desc-2"></div>
+                                    <div class="skel-buttons">
+                                        <div class="skel-btn"></div>
+                                        <div class="skel-btn"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carousel Controls -->
+                        <div class="hero-controls">
+                            <button class="control-btn glass-panel-light" id="hero-prev"><i class='bx bx-chevron-left'></i></button>
+                            <button class="control-btn glass-panel-light" id="hero-next"><i class='bx bx-chevron-right'></i></button>
+                        </div>
+                    </section>
+
+                    <!-- Trending Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Trending Now</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('trending-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('trending-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="trending-container" class="slider-container custom-scrollbar">
+                            <!-- Skeletons -->
+                            <div class="skel-card glass-panel"></div>
+                            <div class="skel-card glass-panel"></div>
+                            <div class="skel-card glass-panel"></div>
+                            <div class="skel-card glass-panel"></div>
+                            <div class="skel-card glass-panel"></div>
+                        </div>
+                    </section>
+
+                    <!-- Top Rated Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Top Rated Masterpieces</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('top-rated-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('top-rated-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="top-rated-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- TV Shows Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Popular TV Shows</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('tv-shows-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('tv-shows-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="tv-shows-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Hollywood Blockbusters Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Hollywood Blockbusters</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('hollywood-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('hollywood-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="hollywood-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- C-Drama Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Epic C-Dramas & Wuxia</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('cdrama-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('cdrama-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="cdrama-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Sci-Fi & Fantasy Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Sci-Fi & Fantasy Series</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('fantasy-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('fantasy-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="fantasy-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Action Movies Section -->
+                    <section class="content-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Adrenaline Action</h2>
+                            <div class="slider-controls">
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('action-container', -400)"><i class='bx bx-chevron-left'></i></button>
+                                <button class="control-btn glass-panel-light" onclick="scrollContainer('action-container', 400)"><i class='bx bx-chevron-right'></i></button>
+                            </div>
+                        </div>
+                        <div id="action-container" class="slider-container custom-scrollbar">
+                            <!-- Injected by JS -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- CATEGORY / GRID VIEW -->
+                <div id="category-view" class="hidden">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title text-4xl" id="category-title">Category Name</h2>
+                    </div>
+                    
+                    <!-- Filter and Sort Tools -->
+                    <div class="filter-bar glass-panel-light mb-8" id="filter-bar">
+                        <div class="filter-group">
+                            <label><i class='bx bx-sort-alt-2'></i> Sort By</label>
+                            <select id="sort-select" class="custom-select">
+                                <option value="popularity.desc">Most Popular</option>
+                                <option value="vote_average.desc">Highest Rated</option>
+                                <option value="primary_release_date.desc">Newest First</option>
+                                <option value="primary_release_date.asc">Oldest First</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class='bx bx-calendar'></i> Year</label>
+                            <select id="year-select" class="custom-select">
+                                <option value="">All Time</option>
+                                <!-- Injected by JS -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class='bx bx-star'></i> Rating</label>
+                            <select id="rating-select" class="custom-select">
+                                <option value="">All Ratings</option>
+                                <option value="8">8.0 & Above</option>
+                                <option value="7">7.0 & Above</option>
+                                <option value="6">6.0 & Above</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class='bx bx-globe'></i> Origin</label>
+                            <select id="origin-select" class="custom-select">
+                                <option value="">Any Region</option>
+                                <option value="US">Hollywood (US)</option>
+                                <option value="IN">Bollywood (India)</option>
+                                <option value="KR">K-Drama (Korea)</option>
+                                <option value="CN">C-Drama / Wuxia (China)</option>
+                                <option value="ZA">South Africa</option>
+                                <option value="WESTERN">Western (Genre)</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class='bx bx-camera-movie'></i> Studio</label>
+                            <select id="studio-select" class="custom-select">
+                                <option value="">Any Studio/Network</option>
+                                <option value="49">HBO Max</option>
+                                <option value="2552">Apple TV+</option>
+                                <option value="213">Netflix</option>
+                                <option value="420">Marvel Studios</option>
+                            </select>
+                        </div>
+                        <button id="apply-filters-btn" class="btn-primary" style="padding: 10px 24px; font-size: 0.9rem; align-self: flex-end;">
+                            Apply
+                        </button>
+                    </div>
+
+                    <div id="category-grid" class="discover-grid">
+                        <!-- Injected by JS -->
+                    </div>
+                    
+                    <!-- Loading State for Search/Filter -->
+                    <div id="category-loading" class="hidden text-center py-20">
+                        <div class="spinner mx-auto" style="margin: 0 auto;"></div>
+                        <p class="mt-4 text-muted font-bold">Loading content...</p>
+                    </div>
+
+                    <div id="empty-state" class="hidden text-center py-20 text-muted">
+                        <i class='bx bx-folder-open text-6xl mb-4'></i>
+                        <h3 class="text-2xl font-bold text-white mb-2">Nothing found</h3>
+                        <p>We couldn't find anything matching your criteria.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Interactive Trailer Modal -->
+    <div id="trailer-modal" class="modal-backdrop hidden">
+        <div class="modal-overlay" onclick="closeTrailer()"></div>
+        
+        <div class="modal-content glass-panel shadow-heavy" id="trailer-content-box">
+            
+            <button onclick="closeTrailer()" class="modal-close-btn glass-panel-light shadow-heavy">
+                <i class='bx bx-x'></i>
+            </button>
+
+            <!-- Video Area -->
+            <div class="video-container" id="video-container">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Details Area -->
+            <div class="modal-details">
+                <div class="modal-blur-accent"></div>
+
+                <div class="modal-info-flex">
+                    <div class="modal-text">
+                        <div class="modal-tags" id="modal-tags">
+                            <span class="tag glass-panel-light" id="modal-type-tag">HD</span>
+                            <span class="tag tag-accent"><i class='bx bxs-star'></i> <span id="modal-rating">0.0</span></span>
+                        </div>
+                        <h3 id="modal-title">Loading...</h3>
+                        <p id="modal-desc" class="modal-overview">Please wait while we fetch the details.</p>
+                        
+                        <div class="modal-cast-section">
+                            <h4>Main Cast</h4>
+                            <div id="modal-cast" class="cast-grid">
+                                <!-- Injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="action-btn glass-panel-light heart tooltip-wrap" id="modal-fav-btn">
+                            <i class='bx bx-heart'></i>
+                        </button>
+                        <button class="action-btn glass-panel-light time tooltip-wrap" id="modal-wl-btn">
+                            <i class='bx bx-time'></i>
+                        </button>
+                        <button class="action-btn glass-panel-light share">
+                            <i class='bx bx-share-alt'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden glass-panel border-primary shadow-glow-primary">
+        <i class='bx bx-check-circle text-primary'></i>
+        <span id="toast-msg">Action successful!</span>
+    </div>
