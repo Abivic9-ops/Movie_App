@@ -629,7 +629,6 @@ input {
 /* Large Notification Panel */
 .notification-panel {
     width: 380px;
-    /* Adjusted size */
     padding: 0;
     overflow: hidden;
 }
