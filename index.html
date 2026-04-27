@@ -65,18 +65,28 @@
                 </div>
             </div>
             
-            <!-- User Profile (Default Logged In) -->
+            <!-- User Profile & Auth Section -->
             <div class="user-profile-wrapper border-top relative-wrapper">
+                <!-- Logged In View -->
                 <div class="user-profile" id="profile-btn">
                     <img id="sidebar-avatar" src="https://i.pravatar.cc/150?img=68" alt="Profile" class="avatar border-primary">
                     <div class="user-info">
                         <p class="user-name" id="sidebar-username">Don Victor</p>
                         <div style="display:flex; align-items:center; gap:4px;">
-                            <i class='bx bxs-crown text-accent' style="font-size:0.8rem;"></i>
+                            <i class='bx bxs-crown text-accent' id="crown-icon" style="font-size:0.8rem;"></i>
                             <p class="user-status text-accent" id="sidebar-plan">Premium Plan</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- Guest / Logged Out View -->
+                <div id="guest-view" class="guest-profile hidden">
+                    <button onclick="openLoginModal()" class="btn-primary w-full shadow-glow-primary" style="padding: 8px; border-radius: 16px;">
+                        <i class='bx bx-log-in-circle'></i> <span>Sign In Now</span>
+                    </button>
+                    <p class="text-xs text-dim text-center mt-2">Unlock all premium features</p>
+                </div>
+
                 <!-- Profile Dropdown (Rich Immediate Card) -->
                 <div class="dropdown-menu dropdown-up glass-panel shadow-heavy hidden" id="profile-dropdown">
                     <div class="dropdown-header">
@@ -87,17 +97,6 @@
                     <div class="dropdown-item" id="btn-open-devices"><i class='bx bx-devices'></i> Linked Devices</div>
                     
                     <div class="border-top my-1"></div>
-                    <div class="dropdown-header">
-                        <p class="text-xs text-dim uppercase bold" style="margin-bottom:8px; letter-spacing:1px;">Rewards</p>
-                    </div>
-                    <div class="dropdown-item" style="justify-content: space-between;">
-                        <div style="display:flex; align-items:center; gap:12px;"><i class='bx bx-wallet'></i> My Wallet</div>
-                        <span class="badge-mini">$12.50</span>
-                    </div>
-                    <div class="dropdown-item"><i class='bx bx-gift'></i> Redeem Code</div>
-                    
-                    <div class="border-top my-1"></div>
-                    <div class="dropdown-item text-primary" id="btn-open-login" onclick="openLoginModal()"><i class='bx bx-log-in-circle'></i> Sign In</div>
                     <div class="dropdown-item text-primary" id="btn-logout" onclick="handleLogout()"><i class='bx bx-log-out-circle'></i> Sign Out</div>
                 </div>
             </div>
@@ -386,7 +385,7 @@
                     </div>
 
                     <div id="category-grid" class="discover-grid">
-                        <!-- Injected by JS -->
+                        <!--To be Injected by JS -->
                     </div>
                     
                     <!-- Loading State for Search/Filter -->
@@ -398,7 +397,7 @@
                     <div id="empty-state" class="hidden text-center py-20 text-muted">
                         <i class='bx bx-folder-open text-6xl mb-4'></i>
                         <h3 class="text-2xl font-bold text-white mb-2">Nothing found</h3>
-                        <p>We couldn't find anything matching your criteria.</p>
+                        <p>We couldn't find anything matching your described criteria.</p>
                     </div>
                 </div>
 
@@ -437,7 +436,7 @@
                         <div class="modal-cast-section">
                             <h4>Main Cast</h4>
                             <div id="modal-cast" class="cast-grid">
-                                <!-- Injected via JS -->
+                                <!--To be Injected via JS -->
                             </div>
                         </div>
                     </div>
@@ -464,9 +463,7 @@
         <span id="toast-msg">Action successful!</span>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         LOGIN MODAL (RESTORED & FUNCTIONAL)
-    ═══════════════════════════════════════ -->
+    <!-- LOGIN MODAL-->
     <div id="login-modal" class="modal-backdrop hidden">
         <div class="modal-overlay" onclick="closeLoginModal()"></div>
         <div class="auth-modal glass-panel shadow-heavy" id="login-box">
@@ -478,7 +475,7 @@
                     <div class="logo-icon gradient-primary shadow-glow-primary">
                         <i class='bx bx-play'></i>
                     </div>
-                    <span class="logo-text">Lyra<span class="text-primary">Stream</span></span>
+                    <span class="logo-text">Movie<span class="text-primary">Hive</span></span>
                 </div>
                 <h2 class="auth-brand-title">Your Cinema,<br>Anywhere.</h2>
                 <p class="auth-brand-sub">Thousands of movies &amp; series at your fingertips. Create a free account to save your favourites and unlock Premium features.</p>
@@ -536,7 +533,7 @@
                         <label>Full Name</label>
                         <div class="input-wrap glass-panel-light">
                             <i class='bx bx-user'></i>
-                            <input type="text" id="signup-name" placeholder="John Doe" required>
+                            <input type="text" id="signup-name" placeholder="Comrade Senior" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -562,9 +559,7 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         ACCOUNT SETTINGS MODAL (EXPANDED)
-    ═══════════════════════════════════════ -->
+    <!--ACCOUNT SETTINGS PART -->
     <div id="settings-modal" class="modal-backdrop hidden">
         <div class="modal-overlay" onclick="closeSettingsModal()"></div>
         <div class="account-modal account-modal-wide glass-panel shadow-heavy">
@@ -733,9 +728,7 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════
-         SUBSCRIPTION MODAL (EXPANDED)
-    ═══════════════════════════════════════ -->
+    <!-- SUBSCRIPTION MODAL-->
     <div id="subscription-modal" class="modal-backdrop hidden">
         <div class="modal-overlay" onclick="closeSubscriptionModal()"></div>
         <div class="account-modal account-modal-wide glass-panel shadow-heavy">

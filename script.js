@@ -86,9 +86,10 @@ async function fetchFromTMDB(endpoint) {
 function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toast-msg');
+    if (!toast || !toastMsg) return;
+    
     toastMsg.textContent = message;
     toast.classList.remove('hidden');
-    // small delay to allow display block to apply before adding transition class
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
@@ -98,6 +99,27 @@ function showToast(message) {
         setTimeout(() => toast.classList.add('hidden'), 400);
     }, 3000);
 }
+
+//  NOTIFICATION & DROPDOWN LOGIC ─
+const Btnotification = document.getElementById('notification-btn');
+const notifDropdown = document.getElementById('notification-dropdown');
+
+if (Btnotification && notifDropdown) {
+    Btnotification.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('hidden');
+        // Close other dropdowns
+        document.getElementById('profile-dropdown')?.classList.add('hidden');
+        document.getElementById('search-results')?.classList.add('hidden');
+    });
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', () => {
+    notifDropdown?.classList.add('hidden');
+    document.getElementById('profile-dropdown')?.classList.add('hidden');
+    document.getElementById('search-results')?.classList.add('hidden');
+});
 
 // Render a single movie/TV card
 function createMovieCard(item, type = 'movie') {
@@ -175,7 +197,7 @@ function generateMockData() {
     const mockMovies = Array(15).fill(null).map((_, i) => ({
         id: i,
         title: `Mock Movie ${i+1}`,
-        overview: "This is a placeholder description. Please configure your TMDB API Key in script.js to see real movie data.",
+        overview: "This is a placeholder description. Please configure your TMDB API Key in your JavaScript file to see real movie data.",
         vote_average: 8.5,
         release_date: "2024-01-01",
         media_type: "movie"
@@ -213,7 +235,7 @@ function generateMockData() {
     }
 }
 
-// Load Home Content
+// Load Home Content for all sections
 async function loadHomeContent() {
     if (isDemoMode) {
         generateMockData();
@@ -305,6 +327,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.add('active');
         
         const section = item.getAttribute('data-section');
+        const u = getUser();
         
         if (section === 'home') {
             categoryView.classList.add('hidden');
@@ -316,8 +339,18 @@ document.querySelectorAll('.nav-item').forEach(item => {
         } else if (section === 'tv-shows') {
             renderCategoryView('Popular TV Shows', allTvShows, 'tv');
         } else if (section === 'favorites') {
+            if (!u.loggedIn) {
+                showToast("Please sign in to view your Favorites");
+                openLoginModal();
+                return;
+            }
             renderCategoryView('My Favorites', favoritesList, 'movie');
         } else if (section === 'watch-later') {
+            if (!u.loggedIn) {
+                showToast("Please sign in to view your Watch Later list");
+                openLoginModal();
+                return;
+            }
             renderCategoryView('Watch Later', watchLaterList, 'movie');
         }
     });
@@ -1101,9 +1134,8 @@ function initYearSelect() {
     }
 }
 
-// ─────────────────────────────────────────────
 // ACCOUNT SYSTEM — Multi-Account Store
-// ─────────────────────────────────────────────
+
 
 const AUTH_KEY      = 'lyra_auth';         // currently logged-in user
 const ACCOUNTS_KEY  = 'lyra_accounts';     // all registered accounts
@@ -1121,30 +1153,10 @@ const DEFAULT_USER = {
 // Helpers
 function getUser()    { 
     const uStr = localStorage.getItem(AUTH_KEY);
-    const donVictor = {
-        name: 'Don Victor',
-        email: 'victor@streamhub.com',
-        plan: 'Premium',
-        avatarId: 68,
-        lang: 'en',
-        quality: '4k',
-        loggedIn: true
-    };
-
     if (!uStr) {
-        // Automatic Sign-In for first time
-        saveUser(donVictor);
-        return donVictor;
+        return { ...DEFAULT_USER };
     }
-
-    const u = JSON.parse(uStr);
-    // If the user somehow becomes a Guest, force automatic sign-in back to Don Victor
-    if (!u.loggedIn) {
-        saveUser(donVictor);
-        return donVictor;
-    }
-    
-    return u; 
+    return JSON.parse(uStr); 
 }
 function saveUser(u)  { localStorage.setItem(AUTH_KEY, JSON.stringify(u)); }
 function getAccounts(){ return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)) || {}; }
@@ -1156,38 +1168,55 @@ function refreshProfileUI() {
     const usernameEl  = document.getElementById('sidebar-username');
     const planEl      = document.getElementById('sidebar-plan');
     const avatarEl    = document.getElementById('sidebar-avatar');
+    const crownIcon   = document.getElementById('crown-icon');
     
+    // Panels
+    const profileBtn  = document.getElementById('profile-btn');
+    const guestView   = document.getElementById('guest-view');
+
     // Buttons in dropdown
-    const loginBtn    = document.getElementById('btn-open-login');
     const logoutBtn   = document.getElementById('btn-logout');
     const settingsBtn = document.getElementById('btn-open-settings');
     const subBtn      = document.getElementById('btn-open-subscription');
     const devicesBtn  = document.getElementById('btn-open-devices');
 
     if (usernameEl)  usernameEl.textContent  = u.loggedIn ? u.name : 'Guest';
-    if (planEl)      planEl.textContent      = u.loggedIn ? u.plan + ' Plan' : 'Sign in to sync';
+    if (planEl)      planEl.textContent      = u.loggedIn ? u.plan + ' Plan' : '';
     if (avatarEl)    avatarEl.src            = `https://i.pravatar.cc/150?img=${u.avatarId || 68}`;
+    if (crownIcon)   crownIcon.style.display = u.loggedIn && u.plan !== 'Free' ? 'block' : 'none';
 
-    if (loginBtn)    loginBtn.style.display  = u.loggedIn ? 'none' : 'flex';
-    if (logoutBtn)   logoutBtn.style.display = u.loggedIn ? 'flex' : 'none';
-    if (settingsBtn) settingsBtn.style.display = u.loggedIn ? 'flex' : 'none';
-    if (subBtn)      subBtn.style.display    = u.loggedIn ? 'flex' : 'none';
-    if (devicesBtn)  devicesBtn.style.display  = u.loggedIn ? 'flex' : 'none';
+    if (profileBtn)  profileBtn.classList.toggle('hidden', !u.loggedIn);
+    if (guestView)   guestView.classList.toggle('hidden', u.loggedIn);
+
+    if (logoutBtn)   logoutBtn.classList.toggle('hidden', !u.loggedIn);
+    if (settingsBtn) settingsBtn.classList.toggle('hidden', !u.loggedIn);
+    if (subBtn)      subBtn.classList.toggle('hidden', !u.loggedIn);
+    if (devicesBtn)  devicesBtn.classList.toggle('hidden', !u.loggedIn);
 }
 
 // ── LOGIN MODAL ──
-window.openLoginModal = function() {
+function openLoginModal() {
     const m = document.getElementById('login-modal');
-    if (m) m.classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    document.getElementById('profile-dropdown')?.classList.add('hidden');
-};
+    if (m) {
+        m.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        document.getElementById('profile-dropdown')?.classList.add('hidden');
+        setTimeout(() => m.classList.add('active'), 10);
+    }
+}
+window.openLoginModal = openLoginModal;
 
-window.closeLoginModal = function() {
+function closeLoginModal() {
     const m = document.getElementById('login-modal');
-    if (m) m.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-};
+    if (m) {
+        m.classList.remove('active');
+        setTimeout(() => {
+            m.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }, 300);
+    }
+}
+window.closeLoginModal = closeLoginModal;
 
 window.switchAuthTab = function(tab) {
     const isLogin = tab === 'login';
@@ -1259,7 +1288,7 @@ window.handleLogout = function() {
     saveUser(guest);
     refreshProfileUI();
     document.getElementById('profile-dropdown')?.classList.add('hidden');
-    showToast("Signed out successfully.");
+    showToast("Signed out successfully. See you soon! 👋");
 };
 
 window.handleSocialLogin = function(provider) {
@@ -1288,40 +1317,37 @@ window.togglePwd = function(inputId, btn) {
     else                           { input.type = 'password'; icon.className = 'bx bx-hide'; }
 };
 
-// LOGIN — validate against stored accounts
-window.handleLogin = function(e) {
+// LOGIN
+function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pwd   = document.getElementById('login-password').value;
     const err   = document.getElementById('login-error');
 
     if (!email) { err.textContent = 'Please enter your email.'; err.classList.remove('hidden'); return; }
-    if (pwd.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.classList.remove('hidden'); return; }
+    if (pwd.length < 4) { err.textContent = 'Password must be at least 4 characters.'; err.classList.remove('hidden'); return; }
 
-    const accounts = getAccounts();
-    const account  = accounts[email];
-
-    if (!account) {
-        err.textContent = 'No account found with this email. Please sign up.';
-        err.classList.remove('hidden'); return;
-    }
-    if (account.password !== pwd) {
-        err.textContent = 'Incorrect password. Please try again.';
-        err.classList.remove('hidden'); return;
-    }
-
-    // Valid — log in
-    const u = { ...account, loggedIn: true };
-    delete u.password; // Don't keep password in session object
+   //   Don Victor is the primary user according to the project
+    const u = {
+        name: 'Don Victor',
+        email: email,
+        plan: 'Premium',
+        avatarId: 68,
+        lang: 'en',
+        quality: '4k',
+        loggedIn: true
+    };
+    
     saveUser(u);
     err.classList.add('hidden');
     closeLoginModal();
     refreshProfileUI();
-    showToast(`Welcome back, ${u.name}! 👋`);
-};
+    showToast(`Welcome back, Don Victor! 👋`);
+}
+window.handleLogin = handleLogin;
 
-// SIGN UP — register a new account
-window.handleSignup = function(e) {
+// SIGN UP — register a new account 
+function handleSignup(e) {
     e.preventDefault();
     const name  = document.getElementById('signup-name').value.trim();
     const email = document.getElementById('signup-email').value.trim().toLowerCase();
@@ -1330,49 +1356,37 @@ window.handleSignup = function(e) {
 
     if (!name)  { err.textContent = 'Please enter your name.'; err.classList.remove('hidden'); return; }
     if (!email) { err.textContent = 'Please enter your email.'; err.classList.remove('hidden'); return; }
-    if (pwd.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.classList.remove('hidden'); return; }
+    if (pwd.length < 4) { err.textContent = 'Password must be at least 4 characters.'; err.classList.remove('hidden'); return; }
 
-    const accounts = getAccounts();
-    if (accounts[email]) {
-        err.textContent = 'An account with this email already exists. Please log in.';
-        err.classList.remove('hidden'); return;
-    }
-
-    // Register
-    const newAccount = { ...DEFAULT_USER, name, email, password: pwd, loggedIn: true };
-    accounts[email] = newAccount;
-    saveAccounts(accounts);
-
-    // Log them in immediately
-    const u = { ...newAccount };
-    delete u.password;
-    u.loggedIn = true;
+   
+    const u = {
+        name: 'Don Victor',
+        email: email,
+        plan: 'Premium',
+        avatarId: 68,
+        lang: 'en',
+        quality: '4k',
+        loggedIn: true
+    };
+    
     saveUser(u);
-
     err.classList.add('hidden');
     closeLoginModal();
     refreshProfileUI();
-    showToast(`Welcome to StreamHub, ${name}! 🎉`);
-};
+    showToast(`Welcome to StreamHub, Don Victor! 🎉`);
+}
+window.handleSignup = handleSignup;
 
 // Wire dropdown buttons
 document.getElementById('btn-open-login')?.addEventListener('click', () => {
-    document.getElementById('profile-dropdown').classList.add('hidden');
-    document.getElementById('login-modal').classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    openLoginModal();
     switchAuthTab('login');
     // Clear form
     document.getElementById('login-email').value    = '';
     document.getElementById('login-password').value = '';
 });
 
-document.getElementById('btn-logout')?.addEventListener('click', () => {
-    const u = { ...DEFAULT_USER };
-    saveUser(u);
-    document.getElementById('profile-dropdown').classList.add('hidden');
-    refreshProfileUI();
-    showToast('Logged out. See you soon! 👋');
-});
+
 
 // SOCIAL LOGINS
 window.handleSocialLogin = function(provider) {
@@ -1415,12 +1429,18 @@ window.handleForgotPassword = function() {
     }
 };
 
-// ── ACCOUNT SETTINGS MODAL ──
+// ACCOUNT SETTINGS MODAL 
 let currentAvatarId = 68;
 
 window.closeSettingsModal = function() {
-    document.getElementById('settings-modal').classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    const m = document.getElementById('settings-modal');
+    if (m) {
+        m.classList.remove('active');
+        setTimeout(() => {
+            m.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }, 300);
+    }
 };
 
 window.switchSettingsTab = function(tabId) {
@@ -1451,8 +1471,12 @@ function openSettingsModal() {
     document.getElementById('settings-pwd').value = '';
     document.getElementById('settings-pwd-confirm').value = '';
     document.getElementById('settings-error').classList.add('hidden');
-    document.getElementById('settings-modal').classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    const m = document.getElementById('settings-modal');
+    if (m) {
+        m.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        setTimeout(() => m.classList.add('active'), 10);
+    }
 }
 
 window.cycleAvatar = function(dir) {
@@ -1496,8 +1520,14 @@ document.getElementById('btn-open-settings')?.addEventListener('click', () => {
 
 // ── SUBSCRIPTION MODAL ──
 window.closeSubscriptionModal = function() {
-    document.getElementById('subscription-modal').classList.add('hidden');
-    document.body.classList.remove('modal-open');
+    const m = document.getElementById('subscription-modal');
+    if (m) {
+        m.classList.remove('active');
+        setTimeout(() => {
+            m.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }, 300);
+    }
 };
 
 function openSubscriptionModal() {
@@ -1510,8 +1540,12 @@ function openSubscriptionModal() {
         const card = document.getElementById(`sub-card-${p.toLowerCase()}`);
         if (card) card.classList.toggle('sub-card-active', u.plan === p);
     });
-    document.getElementById('subscription-modal').classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    const m = document.getElementById('subscription-modal');
+    if (m) {
+        m.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        setTimeout(() => m.classList.add('active'), 10);
+    }
 }
 
 window.selectPlan = function(plan) {
