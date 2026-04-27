@@ -1,4 +1,4 @@
-const TMDB_API_KEY = ""; // ◀ INSERT YOUR TMDB API KEY HERE
+const TMDB_API_KEY = ""; // TMDB API KEY 
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 const IMAGE_BASE_URL_ORIGINAL = "https://image.tmdb.org/t/p/original";
@@ -877,7 +877,7 @@ if (menuToggleBtn && mainSidebar && sidebarOverlay) {
     });
 }
 
-// ── NOTIFICATION & DROPDOWN LOGIC ──
+// NOTIFICATION & DROPDOWN LOGIC 
 function setupDropdowns() {
     const notificationBtn = document.getElementById('notification-btn');
     const notificationDropdown = document.getElementById('notification-dropdown');
@@ -1002,7 +1002,7 @@ async function fetchAndRenderFilteredContent() {
         setTimeout(() => {
             loader.classList.add('hidden');
             
-            // Generate mock data that visually respects the user's filters
+            //For Generating a mock data that visually respects the user's filters
             let mockMovies = Array(20).fill(null).map((_, i) => {
                 const rating = ratingVal ? parseFloat(ratingVal) + (Math.random() * (10 - parseFloat(ratingVal))) : (6 + Math.random() * 4);
                 const year = yearVal ? yearVal : (2000 + Math.floor(Math.random() * 24));
@@ -1033,7 +1033,7 @@ async function fetchAndRenderFilteredContent() {
                 };
             });
 
-            // Mock sorting visually
+            // Mock sorting done visually
             if (sortVal.includes('asc')) {
                 mockMovies.reverse();
             }
@@ -1170,7 +1170,7 @@ function refreshProfileUI() {
     if (devicesBtn)  devicesBtn.classList.toggle('hidden', !u.loggedIn);
 }
 
-// ── LOGIN MODAL ──
+// LOGIN MODAL 
 function openLoginModal() {
     const m = document.getElementById('login-modal');
     if (m) {
@@ -1205,7 +1205,7 @@ window.switchAuthTab = function(tab) {
     document.getElementById('signup-error')?.classList.add('hidden');
 };
 
-// ── AUTH HANDLERS (LOCALSTORAGE) ──
+// AUTH HANDLERS (LOCALSTORAGE) 
 
 window.handleLogin = function(e) {
     e.preventDefault();
@@ -1368,7 +1368,7 @@ document.getElementById('btn-open-login')?.addEventListener('click', () => {
 window.handleSocialLogin = function(provider) {
     showToast(`Connecting to ${provider}... 🔄`);
     
-    // Simulate a brief delay for "OAuth" redirect/popup
+    //A Simulated a brief delay for "OAuth" redirect/popup
     setTimeout(() => {
         const accounts = getAccounts();
         const providerEmail = `${provider.toLowerCase()}@example.com`;
@@ -1550,7 +1550,7 @@ document.getElementById('btn-open-devices')?.addEventListener('click', () => {
     switchSettingsTab('devices');
 });
 
-// ── INITIALIZATION ──
+// INITIALIZATION 
 document.addEventListener('DOMContentLoaded', () => {
     initYearSelect();
     loadHomeContent();

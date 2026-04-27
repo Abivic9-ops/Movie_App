@@ -1635,18 +1635,19 @@ input {
 
 .modal-close-btn {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    width: 44px;
-    height: 44px;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 120;
-    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* Extremely high to stay on top */
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
     transition: var(--transition-snappy);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
@@ -1895,8 +1896,9 @@ input {
     position: relative;
     display: flex;
     width: min(95vw, 850px);
-    max-height: 98vh; /* Increased to fit more content */
-    overflow: hidden;
+    max-height: 98vh;
+    overflow-y: auto; /* Enable vertical scrolling for the whole modal if needed */
+    overflow-x: hidden;
     border-radius: 28px;
     z-index: 1001;
     animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1904,17 +1906,36 @@ input {
 
 /* Left brand panel */
 .auth-brand-panel {
-    width: 320px; /* Narrowed brand panel */
+    width: 320px;
     flex-shrink: 0;
     background: linear-gradient(160deg, rgba(244, 63, 94, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2.5rem 2rem; /* Reduced padding */
+    padding: 3.5rem 2rem; 
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Reduced gap */
+    gap: 1rem; 
     justify-content: center;
     position: relative;
-    overflow: hidden;
+  
+}
+/* Media Query for this part */
+@media (max-width: 768px) {
+    .auth-modal {
+        flex-direction: column;
+        max-height: 98vh;
+        overflow-y: auto;
+    }
+
+    .auth-brand-panel {
+        height: auto;
+        min-height: 200px;
+        padding: 3rem 1.5rem 2rem;
+    }
+
+    .auth-brand-title {
+        font-size: 1.8rem;
+        padding-right: 40px; /* Spacing for the close button */
+    }
 }
 
 .auth-brand-panel::before {
@@ -1961,7 +1982,7 @@ input {
     font-size: 0.9rem;
     color: var(--theme-text-muted);
     line-height: 1.65;
-    margin: 0;
+    margin: 0 0 1.5rem; /* Added bottom margin */
 }
 
 .auth-brand-perks {
@@ -2119,29 +2140,39 @@ input {
 
 /* Mobile: stack panels */
 @media (max-width: 768px) {
-    .auth-modal {
-        flex-direction: column;
-        max-height: 98vh;
-    }
-
     .auth-brand-panel {
         width: 100%;
-        padding: 1.5rem;
-        height: 180px; /* Explicit height for brand panel when stacked */
+        padding: 2rem 1.5rem; /* More vertical padding */
+        height: auto; /* Let it grow with content */
+        min-height: 150px;
         flex-shrink: 0;
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .auth-brand-title {
+        font-size: 1.8rem; /* Slightly smaller for mobile */
+        padding-right: 40px; /* Room for close button */
+    }
+
     .auth-form-panel {
-        padding: 1.5rem;
-        flex: 1; /* Ensure it takes the remaining space */
+        padding: 1.5rem 1.5rem 3rem; /* Extra bottom padding */
+        flex: 1;
+        overflow: visible;
+    }
+
+    .auth-tabs {
+        margin-bottom: 2.5rem; /* More space below tabs */
+    }
+
+    .auth-tab {
+        padding: 14px; /* Slightly larger for touch */
+        font-size: 0.95rem;
+        flex: 1;
     }
 }
 
-/* ==============================
-   ACCOUNT MODALS
-   ============================== */
+/*ACCOUNT MODALS */
 
 .account-modal {
     position: relative;
@@ -2182,10 +2213,11 @@ input {
     display: flex;
     border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 1.5rem; /* Increased for visibility */
-    padding: 6px;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.05); /* Added base background */
+    margin-bottom: 1.5rem;
+    padding: 4px;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .auth-tab {
@@ -2845,8 +2877,8 @@ input:checked+.slider:before {
     overflow: hidden;
 }
 
-/* ===============================
-   DEVICE RESPONSIVENESS
+/* 
+   DEVICE RESPONSIVENESS*/
 
 /* Show Menu Button on Mobile/Tablet */
 body.device-tablet .menu-btn,
@@ -3028,18 +3060,12 @@ body.device-watch .slider-controls {
 body.device-mobile .dropdown-menu {
     width: calc(100vw - 40px);
     position: fixed;
-    bottom: 20px;
+    top: 80px; /* Position below the top header */
     left: 20px;
     right: 20px;
-    top: auto;
-    z-index: 2000;
-    max-height: 80vh; /* Prevent it from going off-screen */
+    bottom: auto;
+    z-index: 2500; /* Higher than sidebar and header */
+    max-height: 70vh;
     overflow-y: auto;
-}
-
-body.device-mobile .notification-panel {
-    width: calc(100vw - 40px);
-    top: 80px;
-    right: 20px;
-    left: 20px;
+    transform-origin: top center;
 }
