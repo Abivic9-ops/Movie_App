@@ -2182,9 +2182,10 @@ input {
     display: flex;
     border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 1rem; /* Reduced from 1.5rem */
-    padding: 4px;
-    gap: 4px;
+    margin-bottom: 1.5rem; /* Increased for visibility */
+    padding: 6px;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05); /* Added base background */
 }
 
 .auth-tab {
@@ -3032,6 +3033,8 @@ body.device-mobile .dropdown-menu {
     right: 20px;
     top: auto;
     z-index: 2000;
+    max-height: 80vh; /* Prevent it from going off-screen */
+    overflow-y: auto;
 }
 
 body.device-mobile .notification-panel {

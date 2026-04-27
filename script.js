@@ -100,26 +100,7 @@ function showToast(message) {
     }, 3000);
 }
 
-//  NOTIFICATION & DROPDOWN LOGIC ─
-const Btnotification = document.getElementById('notification-btn');
-const notifDropdown = document.getElementById('notification-dropdown');
 
-if (Btnotification && notifDropdown) {
-    Btnotification.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notifDropdown.classList.toggle('hidden');
-        // Close other dropdowns
-        document.getElementById('profile-dropdown')?.classList.add('hidden');
-        document.getElementById('search-results')?.classList.add('hidden');
-    });
-}
-
-// Close dropdowns on outside click
-document.addEventListener('click', () => {
-    notifDropdown?.classList.add('hidden');
-    document.getElementById('profile-dropdown')?.classList.add('hidden');
-    document.getElementById('search-results')?.classList.add('hidden');
-});
 
 // Render a single movie/TV card
 function createMovieCard(item, type = 'movie') {
@@ -896,49 +877,44 @@ if (menuToggleBtn && mainSidebar && sidebarOverlay) {
     });
 }
 
-// Dropdowns Logic
-const profileBtn = document.getElementById('profile-btn');
-const profileDropdown = document.getElementById('profile-dropdown');
+// ── NOTIFICATION & DROPDOWN LOGIC ──
+function setupDropdowns() {
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const profileBtn = document.getElementById('profile-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
 
-const notificationBtn = document.getElementById('notification-btn');
-const notificationDropdown = document.getElementById('notification-dropdown');
+    const handleToggle = (btn, dropdown) => {
+        if (!btn || !dropdown) return;
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = dropdown.classList.contains('hidden');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.add('hidden'));
+            document.getElementById('search-results')?.classList.add('hidden');
 
-function toggleDropdown(btn, dropdown) {
-    if(dropdown.classList.contains('hidden')) {
-        // close others first
-        profileDropdown.classList.add('hidden');
-        notificationDropdown.classList.add('hidden');
-        
-        dropdown.classList.remove('hidden');
-    } else {
-        dropdown.classList.add('hidden');
-    }
+            // If it was hidden, show it now
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+            }
+        });
+    };
+
+    handleToggle(notificationBtn, notificationDropdown);
+    handleToggle(profileBtn, profileDropdown);
+
+    document.addEventListener('click', (e) => {
+        // Close if click is outside
+        if (!notificationBtn?.contains(e.target) && !notificationDropdown?.contains(e.target)) {
+            notificationDropdown?.classList.add('hidden');
+        }
+        if (!profileBtn?.contains(e.target) && !profileDropdown?.contains(e.target)) {
+            profileDropdown?.classList.add('hidden');
+        }
+    });
 }
-
-profileBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleDropdown(profileBtn, profileDropdown);
-});
-
-notificationBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleDropdown(notificationBtn, notificationDropdown);
-});
-
-// Close all dropdowns and search on outside click
-document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-        searchResults.classList.add('hidden');
-    }
-    
-    if(!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-        profileDropdown.classList.add('hidden');
-    }
-    
-    if(!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
-        notificationDropdown.classList.add('hidden');
-    }
-});
+setupDropdowns();
 
 // Ripple Effect Interaction
 document.addEventListener('mousedown', function(e) {
